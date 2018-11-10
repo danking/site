@@ -1,0 +1,60 @@
+body {
+  margin-left: auto;
+  margin-right: auto;
+  padding-bottom: 20em;
+  width: 45em;
+  color: #444;
+  font-family: 'Donegal One', serif;
+  font-size: 13pt;
+  line-height: 1.75em;
+}
+
+h1, h2 {
+  font-family: 'Josefin Sans', sans-serif;
+  color: #222;
+}
+
+h1 {
+  font-size: 300%;
+}
+
+h2 {
+  font-size: 175%;
+}
+
+a.topbar {
+  text-decoration: none;
+}
+
+a.topbar:hover {
+  text-decoration: underline;
+}
+a.topbar:visited {
+  color: blue;
+}
+
+img#portrait {
+  float:right;
+  padding-left: 2em;
+  padding-bottom: 2em;
+}
+
+acronym {
+  font-variant: small-caps;
+  text-transform: lowercase;
+  font-weight: 600;
+  letter-spacing: 0.2em;
+}
+
+dd {
+  margin-bottom: .5em;
+  text-align: justify;
+  -webkit-hyphens: auto;
+  -moz-hyphens: auto;
+  -ms-hyphens: auto;
+  hyphens: auto;
+}
+
+span.year {
+  float: right;
+}

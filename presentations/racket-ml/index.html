@@ -1,0 +1,510 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<title>(Machine Learning in Racket)</title>
+<meta name="author" content="(Daniel King)"/>
+<link rel="stylesheet" href="../../reveal.js/css/reveal.min.css"/>
+<link rel="stylesheet" href="../../reveal.js/css/theme/default.css" id="theme"/>
+
+<link rel="stylesheet" href="../../reveal.js/css/print/pdf.css" type="text/css" media="print"/>
+<script type="text/javascript" src="https://c328740.ssl.cf1.rackcdn.com/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+</head>
+<body>
+<div class="reveal">
+<div class="slides">
+<section>
+<h1>Machine Learning in Racket</h1>
+<h2>Daniel King</h2>
+<h2><a href="mailto:daniel.zidan.king@gmail.com">daniel.zidan.king@gmail.com</a></h2>
+<h2></h2></section>
+
+<section>
+<section id="sec-1" >
+
+<h2><span class="section-number-2">1</span> Machine Learning</h2>
+<p>
+"&#x2026; a branch of artificial intelligence, concerns the construction and study of
+systems that can learn from data." ~ Wikipedia
+</p>
+</section>
+</section>
+<section>
+<section id="sec-2" >
+
+<h2><span class="section-number-2">2</span> R</h2>
+<p>
+The R Language
+</p>
+</section>
+<section id="sec-2-1" >
+
+<h3><span class="section-number-3">2.1</span> Nulls</h3>
+<div class="org-src-container">
+
+<pre class="src src-R">foo = data.frame()
+&gt; foo$bar
+<span style="color: #7CB8BB;">NULL</span>
+</pre>
+</div>
+</section>
+<section id="sec-2-2" >
+
+<h3><span class="section-number-3">2.2</span> "c"</h3>
+<p>
+Vectors are created using the `c` operator, which is apparently slang for
+"combine":
+</p>
+
+<div class="org-src-container">
+
+<pre class="src src-R">&gt; c(1,2,3,4)
+[1] 1 2 3 4
+</pre>
+</div>
+</section>
+<section id="sec-2-3" >
+
+<h3><span class="section-number-3">2.3</span> "c"</h3>
+<p>
+But, "All arguments are coerced to a common type which is the type of the
+returned value."
+</p>
+
+<div class="org-src-container">
+
+<pre class="src src-R">&gt; c(1,2,3,4,<span style="color: #CC9393;">'lolwut'</span>)
+[1] <span style="color: #CC9393;">"1"</span>      <span style="color: #CC9393;">"2"</span>      <span style="color: #CC9393;">"3"</span>      <span style="color: #CC9393;">"4"</span>      <span style="color: #CC9393;">"lolwut"</span>
+</pre>
+</div>
+</section>
+<section id="sec-2-4" >
+
+<h3><span class="section-number-3">2.4</span> Robust Parsing</h3>
+<div class="org-src-container">
+
+<pre class="src src-bash">echo 'x = function(_) { 42 }' &gt; /tmp/foo
+</pre>
+</div>
+
+<div class="org-src-container">
+
+<pre class="src src-R">&gt; <span style="color: #BFEBBF;">source</span>(<span style="color: #CC9393;">'/tmp/foo'</span>)
+
+ *** caught segfault ***
+address 0x100, cause <span style="color: #CC9393;">'memory not mapped'</span>
+
+Trace back:
+ 1: <span style="color: #BFEBBF;">source</span>(<span style="color: #CC9393;">"/tmp/foo"</span>)
+
+Possible actions:
+1: abort (with core dump, <span style="color: #F0DFAF; font-weight: bold;">if</span> enabled)
+2: normal R exit
+3: exit R without saving workspace
+4: exit R saving workspace
+</pre>
+</div>
+</section>
+<section id="sec-2-5" >
+
+<h3><span class="section-number-3">2.5</span> Sensible Array Indexing</h3>
+<div class="org-src-container">
+
+<pre class="src src-R">&gt; foo <span style="color: #BFEBBF;">&lt;-</span> c(1,2,3,4)
+&gt; foo[0] <span style="color: #BFEBBF;">&lt;-</span> 10
+&gt; foo
+[1]  1  2  3  4
+</pre>
+</div>
+</section>
+<section id="sec-2-6" >
+
+<h3><span class="section-number-3">2.6</span> Sensible Array Indexing</h3>
+<div class="org-src-container">
+
+<pre class="src src-R">&gt; foo <span style="color: #BFEBBF;">&lt;-</span> c(1,2,3,4)
+&gt; foo[8] <span style="color: #BFEBBF;">&lt;-</span> 10
+&gt; foo
+[1]  1  2  3  4 <span style="color: #7CB8BB;">NA</span> <span style="color: #7CB8BB;">NA</span> <span style="color: #7CB8BB;">NA</span> 10
+</pre>
+</div>
+</section>
+<section id="sec-2-7" >
+
+<h3><span class="section-number-3">2.7</span> Static Types</h3>
+<p>
+Overarching Problem: No Static Type System
+</p>
+</section>
+
+</section>
+<section>
+<section id="sec-3" >
+
+<h2><span class="section-number-2">3</span> Typed Racket</h2>
+<p>
+Overarching Solution: Typed Racket + the Math Library
+</p>
+</section>
+<section id="sec-3-1" >
+
+<h3><span class="section-number-3">3.1</span> Distributions</h3>
+<div class="org-src-container">
+
+<pre class="src src-scheme">&gt; <span style="color: #bebebe;">(</span><span style="color: #F0DFAF; font-weight: bold;">require</span> math<span style="color: #bebebe;">)</span>
+&gt; <span style="color: #bebebe;">(</span>pdf <span style="color: #bebebe;">(</span>normal-dist <span style="color: #0a8;">0</span> <span style="color: #0a8;">1</span><span style="color: #bebebe;">)</span> <span style="color: #0a8;">0</span><span style="color: #bebebe;">)</span>
+<span style="color: #0a8;">0.39894228040143265</span>
+&gt; <span style="color: #bebebe;">(</span>pdf <span style="color: #bebebe;">(</span>beta-dist <span style="color: #0a8;">2</span> <span style="color: #0a8;">3</span><span style="color: #bebebe;">)</span> <span style="color: #0a8;">.8</span><span style="color: #bebebe;">)</span>
+<span style="color: #0a8;">0.38399999999999995</span>
+</pre>
+</div>
+
+<p>
+Awesome!
+</p>
+</section>
+<section id="sec-3-2" >
+
+<h3><span class="section-number-3">3.2</span> Beautiful Plotting -&gt; Beautiful Docs</h3>
+<img src="./media/normal-dist-plot.png" alt="normal-dist-plot.png" />
+</section>
+<section id="sec-3-3" >
+
+<h3><span class="section-number-3">3.3</span> Beautiful Plotting -&gt; Beautiful Docs</h3>
+<img src="./media/beta-dist-plot.png" alt="beta-dist-plot.png" />
+</section>
+<section id="sec-3-4" >
+
+<h3><span class="section-number-3">3.4</span> Beautiful Plotting -&gt; Beautiful Docs</h3>
+<img src="./media/2d-normal-dist-plot.png" alt="2d-normal-dist-plot.png" />
+</section>
+<section id="sec-3-5" >
+
+<h3><span class="section-number-3">3.5</span> Numerical Optimization</h3>
+<div class="org-src-container">
+
+<pre class="src src-scheme">&gt; <span style="color: #bebebe;">(</span><span style="color: #F0DFAF; font-weight: bold;">require</span> math<span style="color: #bebebe;">)</span>
+...
+&gt; <span style="color: #bebebe;">(</span>optim initial-values objective-function gradient<span style="color: #bebebe;">)</span>
+optim: undefined<span style="color: #f4a460;">;</span>
+ cannot reference undefined identifier
+  context...:
+   /Applications/Racket v5.90.0.10/collects/racket/private/misc.rkt:87:7
+</pre>
+</div>
+</section>
+<section id="sec-3-6" >
+
+<h3><span class="section-number-3">3.6</span> Numerical Optimization</h3>
+<div class="org-src-container">
+
+<pre class="src src-scheme">&gt; <span style="color: #bebebe;">(</span><span style="color: #F0DFAF; font-weight: bold;">require</span> math<span style="color: #bebebe;">)</span>
+...
+&gt; <span style="color: #bebebe;">(</span>optimize initial-values objective-function gradient<span style="color: #bebebe;">)</span>
+optimize: undefined<span style="color: #f4a460;">;</span>
+ cannot reference undefined identifier
+  context...:
+   /Applications/Racket v5.90.0.10/collects/racket/private/misc.rkt:87:7
+</pre>
+</div>
+</section>
+<section id="sec-3-7" >
+
+<h3><span class="section-number-3">3.7</span> Multivariate Normal Distribution</h3>
+<div class="org-src-container">
+
+<pre class="src src-scheme">&gt; <span style="color: #bebebe;">(</span><span style="color: #F0DFAF; font-weight: bold;">require</span> math<span style="color: #bebebe;">)</span>
+&gt; <span style="color: #bebebe;">(</span>pdf <span style="color: #bebebe;">(</span>multivariate-normal-dist <span style="color: #0a8;">0</span> <span style="color: #0a8;">1</span><span style="color: #bebebe;">)</span> <span style="color: #0a8;">0</span><span style="color: #bebebe;">)</span>
+multivariate-normal-dist: undefined<span style="color: #f4a460;">;</span>
+ cannot reference undefined identifier
+  context...:
+   /Applications/Racket v5.90.0.10/collects/racket/private/misc.rkt:87:7
+</pre>
+</div>
+</section>
+<section id="sec-3-8" >
+
+<h3><span class="section-number-3">3.8</span> Dirichlet Distribution</h3>
+<div class="org-src-container">
+
+<pre class="src src-scheme">&gt; <span style="color: #bebebe;">(</span><span style="color: #F0DFAF; font-weight: bold;">require</span> math<span style="color: #bebebe;">)</span>
+&gt; <span style="color: #bebebe;">(</span>pdf <span style="color: #bebebe;">(</span>dirichlet-dist <span style="color: #bebebe;">(</span>vector <span style="color: #0a8;">1</span> <span style="color: #0a8;">2</span> <span style="color: #0a8;">3</span> <span style="color: #0a8;">4</span><span style="color: #bebebe;">))</span> <span style="color: #0a8;">0</span><span style="color: #bebebe;">)</span>
+dirichlet-dist: undefined<span style="color: #f4a460;">;</span>
+ cannot reference undefined identifier
+  context...:
+   /Applications/Racket v5.90.0.10/collects/racket/private/misc.rkt:87:7
+</pre>
+</div>
+
+<p>
+Dammit.
+</p>
+</section>
+<section id="sec-3-9" >
+
+<h3><span class="section-number-3">3.9</span> Histograms</h3>
+<div class="org-src-container">
+
+<pre class="src src-scheme">&gt; <span style="color: #bebebe;">(</span>histogram data-vector<span style="color: #bebebe;">)</span>
+histogram: undefined<span style="color: #f4a460;">;</span>
+ cannot reference undefined identifier
+  context...:
+   /Applications/Racket v5.90.0.10/collects/racket/private/misc.rkt:87:7
+</pre>
+</div>
+
+<p>
+Ugh.
+</p>
+
+<p>
+Visualizing data without histograms is hard.
+</p>
+</section>
+
+</section>
+<section>
+<section id="sec-4" >
+
+<h2><span class="section-number-2">4</span> Racket-ML</h2>
+<p>
+I'm building a Racket library of machine learning related things.
+</p>
+
+</section>
+<section id="sec-4-1" >
+
+<h3><span class="section-number-3">4.1</span> Histograms</h3>
+<img src="./media/normal-dist-histogram.png" alt="normal-dist-histogram.png" />
+
+<div class="org-src-container">
+
+<pre class="src src-scheme"><span style="color: #F0DFAF; font-weight: bold;">#lang</span> typed/racket
+<span style="color: #bebebe;">(</span><span style="color: #F0DFAF; font-weight: bold;">require</span> racket-ml
+         plot/typed
+         math
+         <span style="color: #bebebe;">)</span>
+
+<span style="color: #bebebe;">(</span>plot <span style="color: #bebebe;">(</span>hist-gen&amp;render <span style="color: #bebebe;">(</span>sample <span style="color: #bebebe;">(</span>normal-dist <span style="color: #0a8;">0</span> <span style="color: #0a8;">1</span><span style="color: #bebebe;">)</span> <span style="color: #0a8;">1000</span><span style="color: #bebebe;">)</span> <span style="color: #0a8;">30</span><span style="color: #bebebe;">))</span>
+</pre>
+</div>
+
+</section>
+<section id="sec-4-2" >
+
+<h3><span class="section-number-3">4.2</span> New Distributions</h3>
+<p>
+MVN and Dirichlet
+</p>
+</section>
+<section id="sec-4-3" >
+
+<h3><span class="section-number-3">4.3</span> Cholesky Decomposition</h3>
+<p>
+The Cholesky decomposition of a matrix is one definition of the notion of
+a "square root" operation on matrices.
+</p>
+
+\begin{equation}
+  L = \mathrm{cholesky}(A) \text{ s.t. } A = L L^T
+\end{equation}
+</section>
+<section id="sec-4-4" >
+
+<h3><span class="section-number-3">4.4</span> Gaussian Processes</h3>
+<p>
+The Gaussian process is a distribution over functions.
+</p>
+
+\begin{equation}
+  f(\vec{x}) \sim \mathcal{GP}(m(\mathbb{X}), \kappa(\mathbb{X}, \mathbb{X}^{\prime}))
+\end{equation}
+
+<p>
+Where \(\mathbb{X}\) is the training data
+</p>
+
+</section>
+<section id="sec-4-4-1" >
+
+<h4><span class="section-number-4">4.4.1</span> A Few Draws</h4>
+<img src="./media/gp-multiple-draws.png" alt="gp-multiple-draws.png" />
+</section>
+<section id="sec-4-4-2" >
+
+<h4><span class="section-number-4">4.4.2</span> Tight Draws</h4>
+<img src="./media/gp-multiple-draws-tight.png" alt="gp-multiple-draws-tight.png" />
+</section>
+<section id="sec-4-4-3" >
+
+<h4><span class="section-number-4">4.4.3</span> Loose Draws</h4>
+<img src="./media/gp-multiple-draws-loose.png" alt="gp-multiple-draws-loose.png" />
+</section>
+<section id="sec-4-4-4" >
+
+<h4><span class="section-number-4">4.4.4</span> Credible Intervals</h4>
+<img src="./media/gp-credible-intervals.png" alt="gp-credible-intervals.png" />
+</section>
+<section id="sec-4-4-5" >
+
+<h4><span class="section-number-4">4.4.5</span> Math + Plot</h4>
+<p>
+The Math and Plot libraries handle all of this with ease
+</p>
+
+<div class="org-src-container">
+
+<pre class="src src-scheme"></pre>
+</div>
+</section>
+</section>
+<section>
+<section id="sec-5" >
+
+<h2><span class="section-number-2">5</span> Bayesian Statistics</h2>
+</section>
+<section id="sec-5-1" >
+
+<h3><span class="section-number-3">5.1</span> What the hell is "Bayesian" Statistics?</h3>
+<p>
+emacs vs vim
+</p>
+
+<p>
+holy war
+</p>
+
+<p>
+What matters is that when doing machine learning I talk about posteriors,
+priors, and likelihoods.
+</p>
+</section>
+<section id="sec-5-2" >
+
+<h3><span class="section-number-3">5.2</span> Bayes' Rule</h3>
+\begin{equation}
+  p(A|B) = \frac{p(B|A) p(A)}{p(B)}
+\end{equation}
+</section>
+<section id="sec-5-3" >
+
+<h3><span class="section-number-3">5.3</span> Bayes' Rule for Machine Learning</h3>
+\begin{equation}
+  p(M|D) = \frac{p(D|M) p(M)}{p(D)}
+\end{equation}
+
+<ul class="org-ul">
+<li>\(p(M|D)\) is called the posterior
+</li>
+
+<li>\(p(D|M)\) is called the likelihood of the data
+</li>
+
+<li>\(p(M)\) is called the prior
+</li>
+</ul>
+</section>
+<section id="sec-5-4" >
+
+<h3><span class="section-number-3">5.4</span> Posterior</h3>
+<p>
+We seek the posterior, which is a distribution over models.
+</p>
+
+<p>
+If we want to predict new data (e.g. predict the weather tomorrow), we ask each
+model in the posterior what it thinks the new data should be.
+</p>
+
+<p>
+For old ("training") data D and new data D'<sub>i</sub> which is predicted by model M<sub>i</sub>:
+</p>
+
+<p>
+\(p(D'_i \,|\, D) = p(D'_i \,|\, M_i)p(M_i \,|\, D)\)
+</p>
+</section>
+<section id="sec-5-5" >
+
+<h3><span class="section-number-3">5.5</span> Likelihood</h3>
+<p>
+This is the likelihood that the model explains our data. For linear regression,
+we could use the familiar least squares method.
+</p>
+
+<img src="media/LeastSquaresOffsets_1000.gif" alt="LeastSquaresOffsets_1000.gif" />
+
+<p>
+Our model in this case is \(y = m * x + b\) where the model parameters are \(m\) and
+\(b\).
+</p>
+</section>
+<section id="sec-5-6" >
+
+<h3><span class="section-number-3">5.6</span> Prior</h3>
+<p>
+The prior encodes subjective knowledge about the world.
+</p>
+
+<p>
+Priors are often used to combat over-fitting.
+</p>
+</section>
+<section id="sec-5-7" >
+
+<h3><span class="section-number-3">5.7</span> Inference</h3>
+<p>
+"&#x2026; the process of drawing conclusions from data that are subject to random
+variation" ~ Wikipedia
+</p>
+
+<p>
+Take a load of data push it through an algorithm to produce a model of the
+process that produced the data.
+</p>
+</section>
+</section>
+</div>
+</div>
+<script src="../../reveal.js/lib/js/head.min.js"></script>
+<script src="../../reveal.js/js/reveal.min.js"></script>
+<script>
+
+        		// Full list of configuration options available here:
+        		// https://github.com/hakimel/reveal.js#configuration
+        		Reveal.initialize({
+        			controls: true,
+        			progress: true,
+        			history: false,
+        			center: true,
+        			rollingLinks: false,
+        			keyboard: true,
+        			overview: true,
+        			 // slide width
+        			 // slide height
+        			 // slide margin
+        			 // slide minimum scaling factor
+        			 // slide maximum scaling factor
+
+
+        			theme: Reveal.getQueryHash().theme, // available themes are in /css/theme
+        			transition: Reveal.getQueryHash().transition || 'default', // default/cube/page/concave/zoom/linear/fade/none
+        			transitionSpeed: 'default',
+
+        			// Optional libraries used to extend on reveal.js
+        			dependencies: [
+        				{ src: '../../reveal.js/lib/js/classList.js', condition: function() { return !document.body.classList; } }
+        				,{ src: '../../reveal.js/plugin/markdown/showdown.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } }
+        				,{ src: '../../reveal.js/plugin/markdown/markdown.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } }
+        				,{ src: '../../reveal.js/plugin/highlight/highlight.js', async: true, callback: function() { hljs.initHighlightingOnLoad(); } }
+        				,{ src: '../../reveal.js/plugin/zoom-js/zoom.js', async: true, condition: function() { return !!document.body.classList; } }
+        				,{ src: '../../reveal.js/plugin/notes/notes.js', async: true, condition: function() { return !!document.body.classList; } }
+        				// { src: '../../reveal.js/plugin/search/search.js', async: true, condition: function() { return !!document.body.classList; } }
+        				// { src: '../../reveal.js/plugin/remotes/remotes.js', async: true, condition: function() { return !!document.body.classList; } }
+         				
+        			]
+        		});
+</script>
+</body>
+</html>

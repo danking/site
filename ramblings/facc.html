@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+<meta charset="utf-8">
+
+<link rel="stylesheet" type="text/css" href="rambling.css" />
+<link href='https://fonts.googleapis.com/css?family=Donegal+One&subset=latin-ext' rel='stylesheet' type='text/css'>
+<link href='https://fonts.googleapis.com/css?family=Josefin+Sans:700' rel='stylesheet' type='text/css'>
+
+<title>PDA for PDA</title>
+
+</head>
+
+<body>
+
+<div id="page">
+
+<h1>PDA for PDA</h1>
+
+
+<p>
+  As I intend this page to summarize my work for anyone I happen to befriend, I
+  intend to present my work in successive levels of detail.
+</p>
+
+<h2>Generalities</h2>
+
+<p>
+  Every day, people orally communicate with one another. Even the simplest of
+  conversations are difficult for a computer to understand because we rely on
+  implied context and some genuine guess-work to determine the meaning of a
+  sentence.
+</p>
+
+<blockquote>
+  Could you pass me my glass?
+</blockquote>
+
+<p>
+  We refer to objects by specifying their qualities, ownership, location, etc.
+  Sometimes we elide all specifications and simply refer to people and things as
+  "he", "she", and "it", relying on prior context or our interlocutor's
+  intuition. Additionally, the words we use often have multiple meanings, only
+  one of which fits the context.
+</p>
+
+<p>
+  Computer programming languages are far more rigidly defined than natural
+  languages, so ambiguity of meaning rarely occurs; however, ambiguity of
+  approach does occur. I use the term <em>approach</em> to refer to <em>how</em>
+  the machine <em>computes</em> the algorithm specified by the program.
+</p>
+
+<p>
+  A programmer rarely fully specifies the machine-level implementation of a
+  given algorithm. She will rely on libraries that provide general solutions to
+  portions of the algorithm. More importantly, many programs written today
+  manipulate abstract, symbolic data like bank accounts, message inboxes,
+  physical sensors, and other programs. The specific representation of these
+  data as streams of ones and zeros is rarely specified by the programmer.
+</p>
+
+<p>
+</p>
+
+<p>
+  The programmer instead relies on a compiler to intelligently translate the
+  program into ones and zeros that the computer can understand. The compiler
+  must recover contextual information about how various general utilities and
+  concepts are used in the given program. A program's data often have unwritten
+  <em>invariants</em> which the program implicitly or explicitly understands, but
+  does not communicate in source code. These invariants can be as simple as
+  <em>this numeric variable is always positive</em> or as complex as <em>this
+    anonymous function is only called at call sites C3 and C45 with values of
+    types A or B</em>.
+</p>
+
+<p>
+  Compilers generally must produce <em>safe</em> code, which is to say, no
+  matter what happens at run-time, the program will execute correctly. This is
+  analogous to a workman instructing his apprentice to bring <em>a hammer</em>
+  with the expectation that this hammer function equally well as a <em>sludge
+  hammer</em> and a nimble <em>picture hanging hammer</em>. Program invariants
+  are like an implicit understanding that the hammer need only drive a picture
+  nail rather than a heavy slug.
+</p>
+
+<p>
+  Invariants in hand, the compiler is free to
+  produce more efficient programs.
+</p>
+
+<a href="../index.html">back</a>
+
+</div>
+
+</body>
+</html>
