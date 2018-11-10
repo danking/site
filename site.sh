@@ -1,13 +1,11 @@
 #!/bin/sh
 
-letsencrypt() {
-    while true
-    do
-        sleep 60
-        certbot --nginx -d dekvek.com -d www.dekvek.com
-    done
-}
+set -ex
 
-letsencrypt &
+nginx
 
-nginx -g 'daemon off;'
+while true
+do
+    certbot --nginx -d dekvek.com -d www.dekvek.com
+    sleep 60
+done
